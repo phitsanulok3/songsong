@@ -1,96 +1,236 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รดน้ำขอพร</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>รดน้ำขอพรผู้บริหาร</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: sans-serif;
-            overflow: hidden;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
 
-        .page {
-            display: none;
-            width: 100%;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+<style>
+:root {
+    --gold-gradient: linear-gradient(180deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+    --blue-deep: #001ba0;
+}
 
-        .page.active {
-            display: block;
-        }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        .bg-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    font-family: 'Sarabun', sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
 
-            /* ⭐ แก้ปัญหาปุ่มกดไม่ได้ */
-            pointer-events: none;
-        }
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    height: 100vh;
+    margin: 0 auto;
+    background: #fff;
+    position: relative;
+}
 
-        .btn-wrapper {
-            position: absolute;
-            bottom: 10%;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-        }
+.page {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0; left: 0;
+}
+.page.active { display: block; }
 
-        .btn-main {
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 30px;
-            border: none;
-            cursor: pointer;
+/* ⭐ แก้ปัญหาหลัก */
+.bg-img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
 
-            /* ⭐ กันโดนบัง */
-            position: relative;
-            z-index: 1000;
-        }
-    </style>
+    pointer-events: none; /* 🔥 สำคัญ */
+}
+
+.btn-wrapper {
+    position: absolute;
+    bottom: 10%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+    z-index: 999;
+}
+
+.btn-main {
+    background: var(--gold-gradient);
+    color: #403010;
+    border: 2px solid #aa771c;
+    padding: 18px 0;
+    width: 85%;
+    border-radius: 50px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+
+    position: relative;
+    z-index: 1000;
+}
+
+.blessing-overlay {
+    position: absolute;
+    top: 15%;
+    left: 5%;
+    width: 90%;
+    background: rgba(255,255,255,0.95);
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 100;
+    display: none;
+}
+
+.vdo-container {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+}
+
+video {
+    width: 100%;
+}
+
+.step-counter {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+</style>
 </head>
 
 <body>
 
-<!-- หน้า 1 -->
+<div class="app-container">
+
 <div id="page1" class="page active">
     <img src="https://i.ibb.co/qYvnnpC0/2.png" class="bg-img">
-
     <div class="btn-wrapper">
-        <button class="btn-main" onclick="goToPage(2)">
-            กดเข้าร่วมพิธี
-        </button>
+        <button class="btn-main" onclick="goToPage(2)">✓ กดเข้าร่วมพิธีรดน้ำ</button>
     </div>
 </div>
 
-<!-- หน้า 2 -->
 <div id="page2" class="page">
     <img src="https://i.ibb.co/nMgR2nJV/3.png" class="bg-img">
-
     <div class="btn-wrapper">
-        <button class="btn-main" onclick="goToPage(1)">
-            กลับหน้าแรก
-        </button>
+        <button class="btn-main" onclick="startCeremony()">ไปรดน้ำท่านแรก ></button>
     </div>
+</div>
+
+<div id="page3" class="page">
+
+    <div id="blessText" class="blessing-overlay"></div>
+    <div class="step-counter" id="stepLabel">ท่านที่ 1/5</div>
+
+    <div id="stillPhase" style="height:100%;">
+        <img id="bossPic" class="bg-img">
+        <div class="btn-wrapper">
+            <button class="btn-main" onclick="runWaterVdo()">💧 กดรดน้ำ</button>
+        </div>
+    </div>
+
+    <div id="vdoPhase" class="vdo-container" style="display:none;">
+        <video id="vdoPlayer" playsinline>
+            <source id="vdoSrc" src="" type="video/mp4">
+        </video>
+
+        <div id="nextArea" class="btn-wrapper" style="display:none;">
+            <button id="nextBtn" class="btn-main" onclick="nextStep()">ถัดไป ></button>
+        </div>
+    </div>
+
+</div>
+
 </div>
 
 <script>
-function goToPage(n) {
-    const pages = document.querySelectorAll('.page');
-    pages.forEach(p => p.classList.remove('active'));
+const videoURL = "https://res.cloudinary.com/dl5s23mrx/video/upload/v1775617600/797286068.020355_wfg4qw.mp4";
 
-    const target = document.getElementById('page' + n);
-    if (target) {
-        target.classList.add('active');
+const data = [
+ {img:'https://i.ibb.co/1k0JHFQ/3.png', vdo:videoURL},
+ {img:'https://i.ibb.co/1thy4WZn/4.png', vdo:videoURL},
+ {img:'https://i.ibb.co/Y4vvjsVw/5.png', vdo:videoURL},
+ {img:'https://i.ibb.co/fdrM5Pmp/4.png', vdo:videoURL},
+ {img:'https://i.ibb.co/GLt8rYX/7.png', vdo:videoURL}
+];
+
+const wishes = [
+"ขอให้มีความสุข สุขภาพแข็งแรง",
+"ขอให้เจริญก้าวหน้า",
+"ขอให้สมหวัง",
+"ขอให้ครอบครัวอบอุ่น",
+"ขอให้โชคดี"
+];
+
+let currentIdx = 0;
+
+function goToPage(n){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page'+n).classList.add('active');
+}
+
+function startCeremony(){
+    currentIdx = 0;
+    setupBoss();
+    goToPage(3);
+}
+
+function setupBoss(){
+    document.getElementById('bossPic').src = data[currentIdx].img;
+    document.getElementById('vdoSrc').src = data[currentIdx].vdo;
+    document.getElementById('vdoPlayer').load();
+    document.getElementById('stepLabel').innerText = `ท่านที่ ${currentIdx+1}/5`;
+
+    document.getElementById('stillPhase').style.display = 'block';
+    document.getElementById('vdoPhase').style.display = 'none';
+    document.getElementById('blessText').style.display = 'none';
+    document.getElementById('nextArea').style.display = 'none';
+}
+
+function runWaterVdo(){
+    document.getElementById('stillPhase').style.display = 'none';
+    document.getElementById('vdoPhase').style.display = 'flex';
+
+    const v = document.getElementById('vdoPlayer');
+    v.play();
+
+    v.onended = function(){
+        const msg = wishes[Math.floor(Math.random()*wishes.length)];
+        const box = document.getElementById('blessText');
+        box.innerText = msg;
+        box.style.display = 'block';
+
+        document.getElementById('nextArea').style.display = 'flex';
+    }
+}
+
+function nextStep(){
+    if(currentIdx < data.length-1){
+        currentIdx++;
+        setupBoss();
+    }else{
+        location.reload();
     }
 }
 </script>
